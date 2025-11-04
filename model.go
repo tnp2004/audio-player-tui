@@ -17,12 +17,8 @@ type model struct {
 
 func initModel() model {
 	return model{
-		state: audioTypeState,
-		audioType: AudioType{
-			types:    audioTypes,
-			cursor:   defaultAudioTypeCursor,
-			selected: unselectAudioType,
-		},
+		state:     audioTypeState,
+		audioType: initAudioType(),
 	}
 }
 
