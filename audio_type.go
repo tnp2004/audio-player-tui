@@ -17,6 +17,8 @@ type audioChoice struct {
 	desc  string
 }
 
+type audioType int
+
 var (
 	// Color code
 	selectColor     = "#a983f7"
@@ -36,6 +38,12 @@ var (
 
 const audioTypeTitle = "Select audio type"
 
+const (
+	unselect audioType = iota
+	audioFile
+	youtube
+)
+
 var audioTypes = []audioChoice{
 	{"Audio File", "select an audio file from your local system"},
 	{"YouTube", "enter a YouTube video URL"},
@@ -53,30 +61,26 @@ func initAudioType() AudioType {
 	}
 }
 
-func (m model) updateAudioTypeEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m model) updateAudioTypeEvent(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyUp:
-			if m.audioType.cursor > 0 {
-				m.audioType.cursor--
-			} else {
-				m.audioType.cursor = len(m.audioType.types) - 1
-			}
-		case tea.KeyDown:
-			if m.audioType.cursor < len(m.audioType.types)-1 {
-				m.audioType.cursor++
-			} else {
-				m.audioType.cursor = 0
-			}
-		case tea.KeyEnter:
-			m.audioType.selected = m.audioType.cursor
-			m.audioType.cursor = defaultAudioTypeCursor
-		case tea.KeyCtrlC:
-			return m, tea.Quit
+	switch msg.Type {
+	case tea.KeyUp:
+		if m.audioType.cursor > 0 {
+			m.audioType.cursor--
+		} else {
+			m.audioType.cursor = len(m.audioType.types) - 1
 		}
+	case tea.KeyDown:
+		if m.audioType.cursor < len(m.audioType.types)-1 {
+			m.audioType.cursor++
+		} else {
+			m.audioType.cursor = 0
+		}
+	case tea.KeyEnter:
+		m.audioType.selected = m.audioType.cursor
+		m.audioType.cursor = defaultAudioTypeCursor
+		m.state = audioDstInputState
 	}
 
 	return m, cmd
@@ -102,4 +106,15 @@ func (m model) selectAudioTypeView() string {
 	}
 
 	return lipgloss.JoinVertical(lipgloss.Left, sections...)
+}
+
+func (m model) getAudioType() audioType {
+	switch m.audioType.types[m.audioType.selected].title {
+	case "Audio File":
+		return audioFile
+	case "YouTube":
+		return youtube
+	}
+
+	return unselect
 }
