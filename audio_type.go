@@ -23,22 +23,15 @@ var (
 	descSelectColor = "#8d6dcf"
 
 	// Style
-	selectStyle = lipgloss.NewStyle().
+	baseSelectStyle = lipgloss.NewStyle().
 			Bold(true).
 			BorderStyle(lipgloss.BlockBorder()).
 			BorderForeground(lipgloss.Color(selectColor)).
 			BorderLeft(true).
-			Foreground(lipgloss.Color(selectColor)).
 			PaddingLeft(1)
-	descSelectStyle = lipgloss.NewStyle().
-			Bold(true).
-			BorderStyle(lipgloss.BlockBorder()).
-			BorderForeground(lipgloss.Color(selectColor)).
-			BorderLeft(true).
-			Foreground(lipgloss.Color(descSelectColor)).
-			PaddingLeft(1)
-	unselectStyle = lipgloss.NewStyle().
-			PaddingLeft(2)
+	selectStyle     = baseSelectStyle.Foreground(lipgloss.Color(selectColor))
+	descSelectStyle = baseSelectStyle.Foreground(lipgloss.Color(descSelectColor))
+	unselectStyle   = lipgloss.NewStyle().PaddingLeft(2)
 )
 
 const audioTypeTitle = "Select audio type"
@@ -88,8 +81,11 @@ func (m model) updateAudioTypeEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	return m, cmd
 }
+
 func (m model) selectAudioTypeView() string {
 	var sections []string
+	title := m.audioType.title + "\n"
+	sections = append(sections, title)
 
 	for i, c := range m.audioType.types {
 		var title, desc string
@@ -105,10 +101,5 @@ func (m model) selectAudioTypeView() string {
 		sections = append(sections, item)
 	}
 
-	list := lipgloss.JoinVertical(lipgloss.Left, sections...)
-
-	return lipgloss.JoinVertical(lipgloss.Left,
-		m.audioType.title+"\n",
-		list,
-	)
+	return lipgloss.JoinVertical(lipgloss.Left, sections...)
 }
