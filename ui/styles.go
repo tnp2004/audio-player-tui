@@ -3,8 +3,9 @@ package ui
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	SelectColor     = lipgloss.Color("#a983f7")
-	DescSelectColor = lipgloss.Color("#8d6dcf")
+	// Color Code
+	LightPurple = "#a983f7"
+	DarkPurple  = "#8d6dcf"
 )
 
 var (
@@ -12,16 +13,17 @@ var (
 	BaseSelectStyle = lipgloss.NewStyle().
 			Bold(true).
 			BorderStyle(lipgloss.BlockBorder()).
-			BorderForeground(SelectColor).
+			BorderForeground(lipgloss.Color(LightPurple)).
 			BorderLeft(true).
 			PaddingLeft(1)
 
-	SelectStyle     = BaseSelectStyle.Foreground(SelectColor)
-	DescSelectStyle = BaseSelectStyle.Foreground(DescSelectColor)
+	SelectStyle     = BaseSelectStyle.Foreground(lipgloss.Color(LightPurple))
+	DescSelectStyle = BaseSelectStyle.Foreground(lipgloss.Color(DarkPurple))
 	UnselectStyle   = lipgloss.NewStyle().PaddingLeft(2)
 
 	// Audio Destination
 	TextBoxStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color(LightPurple)).
 			Padding(0, 1)
 )
