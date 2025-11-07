@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -34,6 +35,10 @@ func (m Model) handleAudioDestKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch key.Type {
 		case tea.KeyEnter:
+			if err := m.setupAudioPlayer(m.audioDest.input.Value()); err != nil {
+				log.Fatal(err)
+			}
+			m.state = audioPlayerState
 			return m, nil
 		}
 	}

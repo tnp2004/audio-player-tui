@@ -20,12 +20,13 @@ const (
 
 var SupportFileExtensions = map[string]Extension{"mp3": Mp3, "wav": Wav}
 
-type AudioPlayer struct {
-	FilePath string
-	Ctrl     *beep.Ctrl
+type AudioPanel struct {
+	ctrl     *beep.Ctrl
+	streamer beep.StreamSeekCloser
+	format   beep.Format
 }
 
-func NewAudioPlayer(path string) (*AudioPlayer, error) {
+func NewAudioPanel(path string) (*AudioPanel, error) {
 	fileExt := findFileExtension(path)
 	ext, ok := SupportFileExtensions[fileExt]
 	if !ok {
@@ -49,15 +50,33 @@ func NewAudioPlayer(path string) (*AudioPlayer, error) {
 		streamer.Close()
 	})))
 
-	return &AudioPlayer{FilePath: path, Ctrl: ctrl}, nil
+	return &AudioPanel{
+		ctrl:     ctrl,
+		streamer: streamer,
+		format:   format,
+	}, nil
 }
 
-func (p *AudioPlayer) Play() {
-	p.Ctrl.Paused = false
+func (p *AudioPanel) Play() {
+	p.ctrl.Paused = false
 }
 
-func (p *AudioPlayer) Pause() {
-	p.Ctrl.Paused = true
+func (p *AudioPanel) Pause() {
+	p.ctrl.Paused = true
+}
+
+func (p AudioPanel) IsPlaying() bool {
+	return !p.ctrl.Paused
+}
+
+func (p AudioPanel) GetElapsedTime() time.Duration {
+	pos := p.streamer.Position()
+	return p.format.SampleRate.D(pos)
+}
+
+func (p AudioPanel) GetTotalDuration() time.Duration {
+	pos := p.streamer.Len()
+	return time.Duration(p.format.SampleRate.D(pos))
 }
 
 func DecodeAudioFile(file *os.File, ext Extension) (beep.StreamSeekCloser, beep.Format, error) {

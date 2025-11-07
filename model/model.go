@@ -9,12 +9,14 @@ type appState int
 const (
 	audioCategoryState appState = iota
 	audioDestState
+	audioPlayerState
 )
 
 type Model struct {
 	state         appState
 	audioCategory AudioCategory
 	audioDest     AudioDest
+	audioPlayer   AudioPlayer
 	terminal      struct{ width, height int }
 }
 
@@ -23,6 +25,7 @@ func NewModel() Model {
 		state:         audioCategoryState,
 		audioCategory: newAudioCategory(),
 		audioDest:     newAudioDest(),
+		audioPlayer:   newAudioPlayer(),
 	}
 }
 
@@ -47,6 +50,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleAudioCategoryKeyEvent(msg)
 	case audioDestState:
 		return m.handleAudioDestKeyEvent(msg)
+	case audioPlayerState:
+		return m.handleAudioPlayerKeyEvent(msg)
 	}
 
 	return m, nil
@@ -58,6 +63,8 @@ func (m Model) View() string {
 		return m.renderAudioCategoryView()
 	case audioDestState:
 		return m.renderAudioDestView()
+	case audioPlayerState:
+		return m.renderAudioPlayerView()
 	}
 
 	return "empty view"
