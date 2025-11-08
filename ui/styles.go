@@ -26,4 +26,7 @@ var (
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color(LightPurple)).
 			Padding(0, 1)
+
+	// Audio Player
+	ProgressBarStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(LightPurple))
 )
