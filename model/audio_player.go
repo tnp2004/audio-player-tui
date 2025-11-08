@@ -27,16 +27,16 @@ func elapsedTimeTicker() tea.Cmd {
 	})
 }
 
-func (m *Model) setupAudioPlayer(dest string) error {
+func (m Model) setupAudioPlayer(dest string) (Model, error) {
 	player, err := audio.NewAudioPanel(dest)
 	if err != nil {
-		return err
+		return m, err
 	}
 	m.audioPlayer.dest = dest
 	m.audioPlayer.player = player
 	m.audioPlayer.totalDuration = m.audioPlayer.player.GetTotalDuration()
 
-	return nil
+	return m, nil
 }
 
 func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {

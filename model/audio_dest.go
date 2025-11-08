@@ -1,9 +1,6 @@
 package model
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -13,6 +10,7 @@ import (
 type AudioDest struct {
 	title string
 	input textinput.Model
+	err   error
 }
 
 func newAudioDest() AudioDest {
@@ -35,10 +33,10 @@ func (m Model) handleAudioDestKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch key.Type {
 		case tea.KeyEnter:
-			if err := m.setupAudioPlayer(m.audioDest.input.Value()); err != nil {
-				log.Fatal(err)
+			m, m.audioDest.err = m.setupAudioPlayer(m.audioDest.input.Value())
+			if m.audioDest.err == nil {
+				m.state = audioPlayerState
 			}
-			m.state = audioPlayerState
 			return m, nil
 		}
 	}
@@ -51,8 +49,12 @@ func (m Model) renderAudioDestView() string {
 	title := renderAudioTitle(m.getAudioKind())
 	inputView := m.audioDest.input.View()
 	inputBox := ui.TextBoxStyle.Render(inputView)
+	var errMsg string
+	if m.audioDest.err != nil {
+		errMsg = m.audioDest.err.Error()
+	}
 
-	content := fmt.Sprintf("%s\n%s", title, inputBox)
+	content := lipgloss.JoinVertical(lipgloss.Center, title, inputBox, errMsg)
 
 	return lipgloss.PlaceHorizontal(
 		m.terminal.width,

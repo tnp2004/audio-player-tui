@@ -27,10 +27,13 @@ type AudioPanel struct {
 }
 
 func NewAudioPanel(path string) (*AudioPanel, error) {
-	fileExt := findFileExtension(path)
+	fileExt, err := findFileExtension(path)
+	if err != nil {
+		return nil, err
+	}
 	ext, ok := SupportFileExtensions[fileExt]
 	if !ok {
-		return nil, fmt.Errorf("unsupported audio format: .%s", fileExt)
+		return nil, fmt.Errorf("unsupported audio extension .%s", fileExt)
 	}
 
 	file, err := os.Open(path)
@@ -90,11 +93,24 @@ func DecodeAudioFile(file *os.File, ext Extension) (beep.StreamSeekCloser, beep.
 	return nil, beep.Format{}, nil
 }
 
-func findFileExtension(s string) string {
+func findFileExtension(s string) (string, error) {
+	if !isFile(s) {
+		return "", fmt.Errorf("invalid destination")
+	}
+
 	for i := len(s) - 1; i >= 0; i-- {
 		if s[i] == '.' {
-			return s[i+1:]
+			return s[i+1:], nil
 		}
 	}
-	return ""
+
+	return "", nil
+}
+
+func isFile(path string) bool {
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return !info.IsDir()
 }
