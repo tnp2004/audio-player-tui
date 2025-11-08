@@ -14,7 +14,8 @@ import (
 type Extension int
 
 const (
-	Mp3 Extension = iota
+	playOnStart           = true
+	Mp3         Extension = iota
 	Wav
 )
 
@@ -47,7 +48,7 @@ func NewAudioPanel(path string) (*AudioPanel, error) {
 	}
 
 	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-	ctrl := &beep.Ctrl{Streamer: streamer, Paused: true}
+	ctrl := &beep.Ctrl{Streamer: streamer, Paused: !playOnStart}
 	speaker.Play(beep.Seq(ctrl, beep.Callback(func() {
 		file.Close()
 		streamer.Close()
