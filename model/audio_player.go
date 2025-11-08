@@ -51,7 +51,7 @@ func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if key.String() == " " {
 				if m.audioPlayer.player.IsPlaying() {
 					m.audioPlayer.player.Pause()
-					m.updateElapsedTime()
+					m = m.updateElapsedTime()
 					return m, nil
 				}
 
@@ -60,7 +60,7 @@ func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case elapsedTimeMsg:
-		m.updateElapsedTime()
+		m = m.updateElapsedTime()
 		if m.audioPlayer.player.IsPlaying() {
 			return m, elapsedTimeTicker()
 		}
@@ -70,8 +70,9 @@ func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m *Model) updateElapsedTime() {
+func (m Model) updateElapsedTime() Model {
 	m.audioPlayer.elapsedTime = m.audioPlayer.player.GetElapsedTime()
+	return m
 }
 
 func (m Model) renderAudioPlayerView() string {

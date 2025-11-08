@@ -52,11 +52,11 @@ func (m Model) handleAudioCategoryKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch key.Type {
 		case tea.KeyUp:
-			m.audioCategory.moveCursorUp()
+			m = m.moveCursorUp()
 		case tea.KeyDown:
-			m.audioCategory.moveCursorDown()
+			m = m.moveCursorDown()
 		case tea.KeyEnter:
-			m.audioCategory.selectCurrent()
+			m = m.selectCurrent()
 			m.state = audioDestState
 		}
 	}
@@ -76,25 +76,28 @@ func (m Model) renderAudioCategoryView() string {
 	return lipgloss.JoinVertical(lipgloss.Left, sections...)
 }
 
-func (a *AudioCategory) moveCursorUp() {
-	if a.cursor > 0 {
-		a.cursor--
+func (m Model) moveCursorUp() Model {
+	if m.audioCategory.cursor > 0 {
+		m.audioCategory.cursor--
 	} else {
-		a.cursor = len(a.options) - 1
+		m.audioCategory.cursor = len(m.audioCategory.options) - 1
 	}
+	return m
 }
 
-func (a *AudioCategory) moveCursorDown() {
-	if a.cursor < len(a.options)-1 {
-		a.cursor++
+func (m Model) moveCursorDown() Model {
+	if m.audioCategory.cursor < len(m.audioCategory.options)-1 {
+		m.audioCategory.cursor++
 	} else {
-		a.cursor = 0
+		m.audioCategory.cursor = 0
 	}
+	return m
 }
 
-func (a *AudioCategory) selectCurrent() {
-	a.selected = a.cursor
-	a.cursor = defaultAudioCategoryCursor
+func (m Model) selectCurrent() Model {
+	m.audioCategory.selected = m.audioCategory.cursor
+	m.audioCategory.cursor = defaultAudioCategoryCursor
+	return m
 }
 
 func (m Model) getAudioKind() AudioKind {
