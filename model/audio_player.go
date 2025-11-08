@@ -21,8 +21,9 @@ func newAudioPlayer() AudioPlayer {
 	return AudioPlayer{}
 }
 
-func elapsedTimeTicker() tea.Cmd {
-	return tea.Tick(time.Second, func(t time.Time) tea.Msg {
+func elapsedTimeTicker(elapsedTime time.Duration) tea.Cmd {
+	tickDuration := getElapsedDurationTick(elapsedTime)
+	return tea.Tick(tickDuration, func(t time.Time) tea.Msg {
 		return elapsedTimeMsg(t)
 	})
 }
@@ -56,13 +57,13 @@ func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 
 				m.audioPlayer.player.Play()
-				return m, elapsedTimeTicker()
+				return m, elapsedTimeTicker(m.audioPlayer.elapsedTime)
 			}
 		}
 	case elapsedTimeMsg:
 		m = m.updateElapsedTime()
 		if m.audioPlayer.player.IsPlaying() {
-			return m, elapsedTimeTicker()
+			return m, elapsedTimeTicker(m.audioPlayer.elapsedTime)
 		}
 		return m, nil
 	}
@@ -76,5 +77,15 @@ func (m Model) updateElapsedTime() Model {
 }
 
 func (m Model) renderAudioPlayerView() string {
-	return fmt.Sprintf("Audio Player View\n%s / %s", m.audioPlayer.elapsedTime, m.audioPlayer.totalDuration)
+	return fmt.Sprintf("Audio Player View\n%s / %s",
+		m.audioPlayer.elapsedTime.Round(time.Second),
+		m.audioPlayer.totalDuration.Round(time.Second))
+}
+
+func getElapsedDurationTick(elapsedTime time.Duration) time.Duration {
+	ms := elapsedTime % time.Second
+	if ms == 0 {
+		return time.Second
+	}
+	return time.Second - ms
 }
