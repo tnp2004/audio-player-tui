@@ -51,7 +51,8 @@ func (m Model) renderAudioDestView() string {
 		errMsg = m.audioDest.err.Error()
 	}
 
-	content := lipgloss.JoinVertical(lipgloss.Center, title, inputBox, errMsg)
+	helper := ui.KeyHelperStyle.Render("[Enter] confirm  [Ctrl+c] exit")
+	content := lipgloss.JoinVertical(lipgloss.Center, title, inputBox, errMsg, helper)
 
 	return lipgloss.PlaceHorizontal(
 		m.terminal.width,

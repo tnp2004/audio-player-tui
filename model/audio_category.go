@@ -56,6 +56,7 @@ func (m Model) handleAudioCategoryKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m = m.moveCursorDown()
 		case tea.KeyEnter:
 			m = m.selectCurrent()
+			m.audioDest.input.Reset()
 			m.state = audioDestState
 		}
 	}
@@ -71,6 +72,8 @@ func (m Model) renderAudioCategoryView() string {
 		item := renderAudioOption(opt, i == m.audioCategory.cursor)
 		sections = append(sections, item)
 	}
+	helper := ui.KeyHelperStyle.Render("[↑↓] control  [Enter] confirm  [Ctrl+c] exit")
+	sections = append(sections, helper)
 
 	return lipgloss.JoinVertical(lipgloss.Left, sections...)
 }

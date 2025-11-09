@@ -30,4 +30,7 @@ var (
 	// Audio Player
 	ProgressBarStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color(LightPurple))
 	ProgressBarBoxStyle = lipgloss.NewStyle().MarginTop(1)
+
+	// Key Helper
+	KeyHelperStyle = lipgloss.NewStyle().MarginTop(2)
 )

@@ -104,6 +104,7 @@ func (m Model) renderAudioPlayerView() string {
 	filename := m.getDestFilename()
 	title := fmt.Sprintf("Audio Player: %s", filename)
 
+	helper := ui.KeyHelperStyle.Render("[r] replay  [Esc] back  [Ctrl+c] exit")
 	indicator := fmt.Sprintf("%s %s / %s",
 		m.getAudioPlayerStatus(),
 		m.audioPlayer.elapsedTime.Round(time.Second).String(),
@@ -112,7 +113,8 @@ func (m Model) renderAudioPlayerView() string {
 	content := lipgloss.JoinVertical(lipgloss.Center,
 		title,
 		progressBar,
-		indicator)
+		indicator,
+		helper)
 
 	return lipgloss.PlaceHorizontal(m.terminal.width, lipgloss.Center, content)
 }
