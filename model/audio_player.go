@@ -23,7 +23,7 @@ type AudioPlayer struct {
 type elapsedTimeMsg time.Time
 
 func newAudioPlayer() AudioPlayer {
-	return AudioPlayer{}
+	return AudioPlayer{initialized: false}
 }
 
 func elapsedTimeTicker(elapsedTime time.Duration) tea.Cmd {
@@ -59,7 +59,8 @@ func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeySpace:
 			fallthrough
 		case tea.KeyRunes:
-			if key.String() == " " {
+			switch key.String() {
+			case " ":
 				if m.audioPlayer.player.IsPlaying() {
 					m.audioPlayer.player.Pause()
 					m = m.updateElapsedTime()
@@ -68,6 +69,10 @@ func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				m.audioPlayer.player.Play()
 				return m, elapsedTimeTicker(m.audioPlayer.elapsedTime)
+			case "r":
+				m.audioPlayer = newAudioPlayer()
+				m, m.audioDest.err = m.setupAudioPlayer(m.audioDest.input.Value())
+				return m, nil
 			}
 		}
 	case elapsedTimeMsg:
