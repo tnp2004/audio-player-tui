@@ -26,6 +26,16 @@ func newAudioPlayer() AudioPlayer {
 	return AudioPlayer{initialized: false}
 }
 
+func (m Model) initAudioPlayer() (Model, tea.Cmd) {
+	m.audioPlayer = newAudioPlayer()
+	m, m.audioDest.err = m.setupAudioPlayer(m.audioDest.input.Value())
+	if m.audioDest.err == nil {
+		m.state = audioPlayerState
+		return m, elapsedTimeTicker(m.audioPlayer.elapsedTime)
+	}
+	return m, nil
+}
+
 func elapsedTimeTicker(elapsedTime time.Duration) tea.Cmd {
 	tickDuration := getElapsedDurationTick(elapsedTime)
 	return tea.Tick(tickDuration, func(t time.Time) tea.Msg {
@@ -48,14 +58,13 @@ func (m Model) setupAudioPlayer(dest string) (Model, error) {
 func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
-	if !m.audioPlayer.initialized {
-		m.audioPlayer.initialized = true
-		return m, elapsedTimeTicker(m.audioPlayer.elapsedTime)
-	}
-
 	switch key := msg.(type) {
 	case tea.KeyMsg:
 		switch key.Type {
+		case tea.KeyEsc:
+			m.audioPlayer.player.Pause()
+			m.state = audioCategoryState
+			return m, nil
 		case tea.KeySpace:
 			fallthrough
 		case tea.KeyRunes:

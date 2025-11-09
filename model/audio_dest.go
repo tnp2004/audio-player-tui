@@ -33,11 +33,8 @@ func (m Model) handleAudioDestKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch key.Type {
 		case tea.KeyEnter:
-			m, m.audioDest.err = m.setupAudioPlayer(m.audioDest.input.Value())
-			if m.audioDest.err == nil {
-				m.state = audioPlayerState
-			}
-			return m, nil
+			m, cmd = m.initAudioPlayer()
+			return m, cmd
 		}
 	}
 
