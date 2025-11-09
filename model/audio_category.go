@@ -35,7 +35,6 @@ const (
 
 var defaultAudioOptions = []AudioOption{
 	{"Audio File", "Select an audio file from your local system", AudioFile},
-	{"YouTube", "Enter a YouTube video URL", YouTube},
 }
 
 func newAudioCategory() AudioCategory {
