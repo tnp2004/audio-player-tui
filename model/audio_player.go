@@ -13,6 +13,7 @@ import (
 )
 
 type AudioPlayer struct {
+	initialized   bool
 	dest          string
 	player        *audio.AudioPanel
 	totalDuration time.Duration
@@ -46,6 +47,11 @@ func (m Model) setupAudioPlayer(dest string) (Model, error) {
 
 func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
+
+	if !m.audioPlayer.initialized {
+		m.audioPlayer.initialized = true
+		return m, elapsedTimeTicker(m.audioPlayer.elapsedTime)
+	}
 
 	switch key := msg.(type) {
 	case tea.KeyMsg:
