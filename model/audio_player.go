@@ -155,7 +155,7 @@ func drawProgressBar(terminalWidth int, elapsedTime, totalDuration time.Duration
 	left := ui.ProgressBarStyle.Render(strings.Repeat(progressSymbol, pos))
 	right := ui.ProgressBarStyle.Render(strings.Repeat(progressSymbol, width-pos-1))
 
-	return fmt.Sprintf("[%s%s%s]", left, indicatorSymbol, right)
+	return ui.ProgressBarBoxStyle.Render(fmt.Sprintf("[%s%s%s]", left, indicatorSymbol, right))
 }
 
 func getElapsedDurationTick(elapsedTime time.Duration) time.Duration {

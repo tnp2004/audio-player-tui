@@ -28,5 +28,6 @@ var (
 			Padding(0, 1)
 
 	// Audio Player
-	ProgressBarStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(LightPurple))
+	ProgressBarStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color(LightPurple))
+	ProgressBarBoxStyle = lipgloss.NewStyle().MarginTop(1)
 )
