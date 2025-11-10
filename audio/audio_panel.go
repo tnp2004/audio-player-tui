@@ -3,6 +3,7 @@ package audio
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/faiface/beep"
@@ -31,6 +32,7 @@ type AudioPanel struct {
 }
 
 func NewAudioPanel(path string) (*AudioPanel, error) {
+	path = strings.Trim(path, `"`)
 	fileExt, err := findFileExtension(path)
 	if err != nil {
 		return nil, err
