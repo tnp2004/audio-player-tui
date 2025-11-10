@@ -82,6 +82,14 @@ func (m Model) handleAudioPlayerKeyEvent(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.audioPlayer = newAudioPlayer()
 				m, m.audioDest.err = m.setupAudioPlayer(m.audioDest.input.Value())
 				return m, nil
+			case "=":
+				fallthrough
+			case "+":
+				m.audioPlayer.player.IncreaseVolume()
+			case "_":
+				fallthrough
+			case "-":
+				m.audioPlayer.player.DecreaseVolume()
 			}
 		}
 	case elapsedTimeMsg:
@@ -104,7 +112,7 @@ func (m Model) renderAudioPlayerView() string {
 	filename := m.getDestFilename()
 	title := fmt.Sprintf("Audio Player: %s", filename)
 
-	helper := ui.KeyHelperStyle.Render("[r] replay  [Esc] back  [Ctrl+c] exit")
+	helper := ui.KeyHelperStyle.Render("[+/-] volume control [r] replay  [Esc] back  [Ctrl+c] exit")
 	indicator := fmt.Sprintf("%s %s / %s",
 		m.getAudioPlayerStatus(),
 		m.audioPlayer.elapsedTime.Round(time.Second).String(),

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/faiface/beep"
+	"github.com/faiface/beep/effects"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
@@ -14,6 +15,7 @@ import (
 type Extension int
 
 const (
+	volumeStep            = 1.0
 	playOnStart           = true
 	Mp3         Extension = iota
 	Wav
@@ -25,6 +27,7 @@ type AudioPanel struct {
 	ctrl     *beep.Ctrl
 	streamer beep.StreamSeekCloser
 	format   beep.Format
+	volume   *effects.Volume
 }
 
 func NewAudioPanel(path string) (*AudioPanel, error) {
@@ -48,7 +51,14 @@ func NewAudioPanel(path string) (*AudioPanel, error) {
 	}
 
 	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
-	ctrl := &beep.Ctrl{Streamer: streamer, Paused: !playOnStart}
+	volume := &effects.Volume{
+		Streamer: streamer,
+		Base:     2.0,
+		Volume:   0,
+		Silent:   false,
+	}
+
+	ctrl := &beep.Ctrl{Streamer: volume, Paused: !playOnStart}
 	speaker.Play(beep.Seq(ctrl, beep.Callback(func() {
 		file.Close()
 		streamer.Close()
@@ -58,6 +68,7 @@ func NewAudioPanel(path string) (*AudioPanel, error) {
 		ctrl:     ctrl,
 		streamer: streamer,
 		format:   format,
+		volume:   volume,
 	}, nil
 }
 
@@ -71,6 +82,18 @@ func (p *AudioPanel) Pause() {
 
 func (p AudioPanel) IsPlaying() bool {
 	return !p.ctrl.Paused
+}
+
+func (p *AudioPanel) IncreaseVolume() {
+	speaker.Lock()
+	p.volume.Volume += volumeStep
+	speaker.Unlock()
+}
+
+func (p *AudioPanel) DecreaseVolume() {
+	speaker.Lock()
+	p.volume.Volume -= volumeStep
+	speaker.Unlock()
 }
 
 func (p AudioPanel) GetElapsedTime() time.Duration {
